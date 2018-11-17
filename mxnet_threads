@@ -1,0 +1,75 @@
+(lldb) process attach --pid 54371
+Process 54371 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = signal SIGSTOP
+    frame #0: 0x00007fff902d7df6 libsystem_kernel.dylib`__recvfrom + 10
+libsystem_kernel.dylib`__recvfrom:
+->  0x7fff902d7df6 <+10>: jae    0x7fff902d7e00            ; <+20>
+    0x7fff902d7df8 <+12>: movq   %rax, %rdi
+    0x7fff902d7dfb <+15>: jmp    0x7fff902d0cd4            ; cerror
+    0x7fff902d7e00 <+20>: retq   
+Target 0: (mvn.cpython-36m-darwin.so) stopped.
+
+Executable module set to "/Users/vikumar/anaconda3/lib/python3.6/site-packages/scipy/stats/mvn.cpython-36m-darwin.so".
+Architecture set to: x86_64h-apple-macosx.
+(lldb) thread backtrace all
+* thread #1, queue = 'com.apple.main-thread', stop reason = signal SIGSTOP
+  * frame #0: 0x00007fff902d7df6 libsystem_kernel.dylib`__recvfrom + 10
+    frame #1: 0x0000000a158d1d5b _socket.cpython-36m-darwin.so`sock_recv_impl + 27
+    frame #2: 0x0000000a158d101b _socket.cpython-36m-darwin.so`sock_call_ex + 299
+    frame #3: 0x0000000a158cf1c9 _socket.cpython-36m-darwin.so`sock_recv_into + 217
+    frame #4: 0x0000000108f1c76a python`_PyCFunction_FastCallDict + 362
+    frame #5: 0x0000000108ff384f python`call_function + 143
+    frame #6: 0x0000000108ff154a python`_PyEval_EvalFrameDefault + 47098
+    frame #7: 0x0000000108ff435f python`_PyFunction_FastCallDict + 175
+    frame #8: 0x0000000108e9b3d0 python`_PyObject_FastCallDict + 320
+    frame #9: 0x0000000108ec2848 python`method_call + 136
+    frame #10: 0x0000000108e9b341 python`_PyObject_FastCallDict + 177
+    frame #11: 0x0000000108ea428a python`PyObject_CallMethodObjArgs + 490
+    frame #12: 0x00000001090d102a python`_bufferedreader_raw_read + 170
+    frame #13: 0x00000001090d141c python`_buffered_readinto_generic + 700
+    frame #14: 0x00000001090ce920 python`_io__Buffered_readinto + 96
+    frame #15: 0x0000000108f1c742 python`_PyCFunction_FastCallDict + 322
+    frame #16: 0x0000000108ff384f python`call_function + 143
+    frame #17: 0x0000000108ff154a python`_PyEval_EvalFrameDefault + 47098
+    frame #18: 0x0000000108ff3c0c python`fast_function + 188
+    frame #19: 0x0000000108ff38ac python`call_function + 236
+    frame #20: 0x0000000108ff154a python`_PyEval_EvalFrameDefault + 47098
+    frame #21: 0x0000000108fe4b89 python`_PyEval_EvalCodeWithName + 425
+    frame #22: 0x0000000108ff3cba python`fast_function + 362
+    frame #23: 0x0000000108ff38ac python`call_function + 236
+    frame #24: 0x0000000108ff154a python`_PyEval_EvalFrameDefault + 47098
+    frame #25: 0x0000000108fe4b89 python`_PyEval_EvalCodeWithName + 425
+    frame #26: 0x0000000108ff3cba python`fast_function + 362
+    frame #27: 0x0000000108ff38ac python`call_function + 236
+    frame #28: 0x0000000108ff15fa python`_PyEval_EvalFrameDefault + 47274
+    frame #29: 0x0000000108ed8ede python`gen_send_ex + 142
+    frame #30: 0x0000000108ff089c python`_PyEval_EvalFrameDefault + 43852
+    frame #31: 0x0000000108ed8ede python`gen_send_ex + 142
+    frame #32: 0x0000000108ff089c python`_PyEval_EvalFrameDefault + 43852
+    frame #33: 0x0000000108fe4b89 python`_PyEval_EvalCodeWithName + 425
+    frame #34: 0x0000000108ff3cba python`fast_function + 362
+    frame #35: 0x0000000108ff38ac python`call_function + 236
+    frame #36: 0x0000000108ff154a python`_PyEval_EvalFrameDefault + 47098
+    frame #37: 0x0000000108ff3c0c python`fast_function + 188
+    frame #38: 0x0000000108ff38ac python`call_function + 236
+    frame #39: 0x0000000108ff154a python`_PyEval_EvalFrameDefault + 47098
+    frame #40: 0x0000000108fe4b89 python`_PyEval_EvalCodeWithName + 425
+    frame #41: 0x000000010903d0dc python`PyRun_FileExFlags + 252
+    frame #42: 0x000000010903c83e python`PyRun_SimpleFileExFlags + 366
+    frame #43: 0x0000000109063156 python`Py_Main + 3734
+    frame #44: 0x0000000108e93469 python`main + 313
+    frame #45: 0x00007fff901a9235 libdyld.dylib`start + 1
+    frame #46: 0x00007fff901a9235 libdyld.dylib`start + 1
+  thread #2
+    frame #0: 0x00007fff902d7bf2 libsystem_kernel.dylib`__psynch_cvwait + 10
+    frame #1: 0x00007fff903c37fa libsystem_pthread.dylib`_pthread_cond_wait + 712
+    frame #2: 0x00007fff8ed414cd libc++.1.dylib`std::__1::condition_variable::wait(std::__1::unique_lock<std::__1::mutex>&) + 47
+    frame #3: 0x000000010af761db libmxnet.so`mxnet::op::custom::CustomOperator::CustomOperator()::'lambda'()::operator()() const + 91
+    frame #4: 0x000000010af7610d libmxnet.so`std::__1::__thread_proxy<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct> >, mxnet::op::custom::CustomOperator::CustomOperator()::'lambda'()> >(void*, void*) + 45
+    frame #5: 0x00007fff903c293b libsystem_pthread.dylib`_pthread_body + 180
+    frame #6: 0x00007fff903c2887 libsystem_pthread.dylib`_pthread_start + 286
+    frame #7: 0x00007fff903c208d libsystem_pthread.dylib`thread_start + 13
+  thread #3
+    frame #0: 0x00007fff902d844e libsystem_kernel.dylib`__workq_kernreturn + 10
+    frame #1: 0x00007fff903c248e libsystem_pthread.dylib`_pthread_wqthread + 1023
+    frame #2: 0x00007fff903c207d libsystem_pthread.dylib`start_wqthread + 13
