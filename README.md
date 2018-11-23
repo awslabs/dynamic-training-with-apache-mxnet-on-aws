@@ -65,13 +65,13 @@ make
 
 ### Data Preparation
 
-When new workers are added to cluster that is actively training,
+When new workers are added to a cluster that is actively training,
 they need to be provided with the training data.
 
 For this purpose you need a data preparation script which is deployed with each new worker.
 
-You can write any "prepare data" code which will be run before worker is added to cluster.
-The worker will be added to cluster only if this script is successfully executed.
+You can write any "prepare data" code which will be run before worker is added to a cluster.
+The worker will be added to the cluster only if this script is successfully executed.
 
 * [Example data preparation script](prepare-data.py) - this script downloads the CIFAR10 dataset.
 
@@ -180,7 +180,7 @@ The output will look something like this:
 While instances are launched and added to the training cluster,
 you can watch the `elastic_worker_status` tag on the newly launched instances.
 This will let you know once the instance is added to the cluster.
-`ADDED` means the instances were successfully added to cluster.
+`ADDED` means the instances were successfully added to the cluster.
 
 In logs you will see lines like:
 
