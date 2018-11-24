@@ -43,7 +43,7 @@ The workers don't have public IPs,
 so if you need to access a worker, you do this from the master.
 
 ### Shared File System
-Also, all of the nodes need access to the dataset through a shared file system.
+Training cluster nodes access the training dataset using a shared file system.
 
 ### MXNet Dynamic Training Package
 Use pip to install the package, or build the package from source.
