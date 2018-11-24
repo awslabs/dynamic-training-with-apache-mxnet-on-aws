@@ -39,8 +39,7 @@ For example, if you have two nodes - master & worker:
 Dynamic Training's cluster setup assumes you have your master and any number of worker nodes.
 The most basic setup is one master and one worker, making a two node cluster.
 You administer everything from the master by SSH.
-The workers don't have public IPs,
-so if you need to access a worker, you do this from the master.
+The workers don't have public IPs, so if you need to access a worker, you do this from the master.
 
 ### Shared File System
 Training cluster nodes access the training dataset using a shared file system.
