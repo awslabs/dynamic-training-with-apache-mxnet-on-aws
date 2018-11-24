@@ -1,4 +1,4 @@
-# Dynamic Training with MXNet
+# Dynamic Training with Apache MXNet
 
 Dynamic Training (DT) is an experimental fork of MXNet that you can use for dynamically scaling your training jobs.
 
