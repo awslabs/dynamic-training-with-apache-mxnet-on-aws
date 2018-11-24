@@ -435,7 +435,7 @@ monitor=monitor)
 
 ### Example Scripts
 
-TODO: Add links to scripts
+This [example](https://github.com/awslabs/dynamic-training-with-apache-mxnet-on-aws/blob/master/example/dynamic-training/train_resnet.py) trains a ResNet-50 model on the Imagenet dataset.
 
 
 ## Troubleshooting
