@@ -3,7 +3,7 @@
 Dynamic Training (DT) is an experimental fork of MXNet that you can use for dynamically scaling your training jobs.
 
 To use the dynamic training feature you need an instance to serve as your master.
-You can then add workers at any time to increase your cluster size, even while training.
+You can then add or remove workers at any time to increase your cluster size, even while training.
 
 You can setup Dynamic Training with a Cloud Formation Template (CFT) or with the AWS CLI tool.
 Tutorials for each route are provided.
