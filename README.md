@@ -27,13 +27,13 @@ Then you add new workers through the EC2 console by using the Launch from Templa
 ## Plan Your Cluster
 
 So you want use Dynamic Training, but you need a plan!
-There are four areas to plan regardless if you use CFT or the AWS CLI: accessing the nodes, setting up a shared file system, getting the DT package, and what data prep script to use.
+There are four areas to plan regardless if you use CFT or the AWS CLI: accessing the nodes, sharing training data or setting up a shared file system, getting the DT package, and what data prep script and training scripts to use.
 
 For example, if you have two nodes - master & worker:
 1) You can ssh into the master node, then from master, you can ssh into the worker.
-2) You have a shared file system, which master & worker can access.
+2) Training data available to each node, either locally or through a shared file system, which master & worker can access.
 3) You have installed MXNet Dynamic Training pip package OR built it from source on the master node.
-4) You have a data preparation script that new workers will use to get ahold of training data.
+4) You have a data preparation script that new workers will use to get ahold of training data, plus the training script that will be used by all members of the cluster.
 
 ### Access
 Dynamic Training's cluster setup assumes you have your master and any number of worker nodes.
@@ -46,7 +46,7 @@ Training cluster nodes access the training dataset using a shared file system.
 
 ### MXNet Dynamic Training Package
 Use pip to install the package, or build the package from source.
-* [Wheel file of mxnet_cu92mkl-1.3.1 with Dynamic Training](https://s3-us-west-2.amazonaws.com/us-west-2-aws-dl-cfn/mxnet_cu92mkl-1.3.1-py2.py3-none-manylinux1_x86_64.whl)
+* [Wheel file of mxnet_cu92mkl-1.3.1 with Dynamic Training](https://s3.amazonaws.com/us-east-1-aws-dl-cfn/mxnet_cu92mkl-1.3.1-py2.py3-none-manylinux1_x86_64.whl)
 
 To install with pip (recommended):
 ```bash
@@ -168,6 +168,8 @@ The output will look something like this:
 2018-11-16 22:46:47,536 INFO Launching worker node at ip: 10.0.1.207
 ```
 
+Note the location of the host worker file, `/myEFSvolume/host_worker` and the host log file, `/myEFSvolume/host_worker_log`.
+You may need these later for administering or troubleshooting your cluster.
 
 ### Part 2: Add More Workers to a Training Cluster
 
@@ -176,10 +178,11 @@ The output will look something like this:
 **Step 2:** Find the Launch Template with the name you provided when you created the Stack.
 **Step 3:** Launch more instances with this template. Select the template version at next page. Everything else will be pre-filled after you select the template version. Then click *Launch instance from template*.
 
-While instances are launched and added to the training cluster,
-you can watch the `elastic_worker_status` tag on the newly launched instances.
-This will let you know once the instance is added to the cluster.
-`ADDED` means the instances were successfully added to the cluster.
+Once a node is available, the data preparation script is executed.
+If the run is successful, the node is added to training cluster.
+Only then is the `elastic_worker_status` tag created.
+
+This value of the tag starts with `ADD_QUEUED` and then once successfully added to cluster, the value will be changed to `ADDED`.
 
 In logs you will see lines like:
 
@@ -233,6 +236,9 @@ function runclust(){ while read -u 10 host; do host=${host%% slots*}; ssh -o "St
 **Step 2:** Create a hosts file that has the private IPs of every node in the cluster.
 Place the private IP of the master node last in the list.
 That way you can keep track of it. When removing nodes, you never want to remove the master accidentally.
+Also, note that you should not remove these hosts, as these are base hosts required for running training.
+You can only remove nodes which were added after training started.
+
 Save it in your master node's home directory.
 It will look something like this:
 
@@ -304,6 +310,9 @@ The output will look something like this:
 2018-11-16 22:46:47,533 INFO Launching worker node at ip: 10.0.0.25
 2018-11-16 22:46:47,536 INFO Launching worker node at ip: 10.0.1.207
 ```
+
+Note the location of the host worker file, `/myEFSvolume/host_worker` and the host log file, `/myEFSvolume/host_worker_log`.
+You may need these later for administering or troubleshooting your cluster.
 
 
 ### Part 2: Add New Workers to the Cluster
@@ -432,9 +441,14 @@ allow_missing=True,
 monitor=monitor)
 ```
 
-### Example Scripts
+## Example Scripts
 
-This [example](https://github.com/awslabs/dynamic-training-with-apache-mxnet-on-aws/blob/master/example/dynamic-training/train_resnet.py) trains a ResNet-50 model on the Imagenet dataset.
+* [ResNet-50 model on the Imagenet dataset](https://github.com/awslabs/dynamic-training-with-apache-mxnet-on-aws/blob/master/example/dynamic-training/train_resnet.py)
+* [CIFAR10](https://github.com/awslabs/dynamic-training-with-apache-mxnet-on-aws/blob/master/example/image-classification/train_cifar10.py)
+
+Example code blocks using the `ETDataIterator`:
+* Check out the [section of code](https://github.com/awslabs/dynamic-training-with-apache-mxnet-on-aws/blob/master/example/image-classification/common/fit.py#L31) for `ETDataIterator` which is used for `train_cifar10.py`
+* Check out this [section of code](https://github.com/awslabs/dynamic-training-with-apache-mxnet-on-aws/blob/master/example/image-classification/common/fit.py#L238) using the `ETDataIterator` object with the `Module` object:
 
 
 ## Troubleshooting
@@ -463,7 +477,8 @@ You can select them, and view Instances tab and Activity History tab to see what
   `/var/log/cloud-init-output.log`, `/var/log/cfn-init-cmd.log`, and `/var/log/cfn-init.log`.
   Look for any errors in the logs.
 4) Check environment variables with `env`.
-It should have these variable set: ELASTIC_WORKER_TAG, WORKER_LAUNCH_TEMPLATE_ID, DEEPLEARNING_WORKERS_PATH=/opt/deeplearning/workers, DEEPLEARNING_WORKERS_COUNT=2, AWS_REGION, DEEPLEARNING_WORKER_GPU_COUNT, EFS_MOUNT
+It should have these variable set: `ELASTIC_WORKER_TAG`, `WORKER_LAUNCH_TEMPLATE_ID`, `DEEPLEARNING_WORKERS_PATH=/opt/deeplearning/workers`, `DEEPLEARNING_WORKERS_COUNT=2`, `AWS_REGION`, `DEEPLEARNING_WORKER_GPU_COUNT`, `EFS_MOUNT`
+      DEEPLEARNING_WORKERS_COUNT value should be equal to number of nodes you launched, including master.
 5) Make sure that you have the launch.py script and your training code on shared the shared EFS volume, i.e, `/myEFSvolume.`
 6) A new worker is not getting added. The tag expected isn't appearing: `elastic_worker_status : ADDED`
 Make sure that you launched the worker. Make sure that new worker instance is running. Note the private IP of instance and verify it in the hosts file. Check `<dir-of-launch.py>/host_worker` file and verify that the private IP of the instance is added to this file. Check the logs.
@@ -473,7 +488,8 @@ If you see the private IP, check the `<dir-of-launch.py>/host_worker_log` file, 
 If there is no entry in `<dir-of-launch.py>/host_worker_log` file, the instance may be preparing data.
 Login to the new node (from the master node, use `ssh private-ip`).
 Verify the steps for a newly launched instance.
-Check that the prepared data is either successful, or if that Python process is still running. In case it was successful, there should be a 0 byte file created in `/myEFSvolume/prepare_data_success`.
+If Cloud Formation was used, the logs will be in `/var/log/cloud-init-output.log`.
+Check that the prepared data is either successful, or if that Python process is still running. In case it was successful, there should be a 0 byte file created in `/myEFSvolume/prepare_data_success_<host_ip>`.
 If you don't find this success file and you have made sure that data has been prepared, and there are no other errors in the logs, you can create this file manually. Any new node should be picked up in the next epoch.
 
 **Report any issues here in the GitHub repo.**
