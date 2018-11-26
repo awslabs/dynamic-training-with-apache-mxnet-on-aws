@@ -50,7 +50,7 @@ Use pip to install the package, or build the package from source.
 
 To install with pip (recommended):
 ```bash
-pip install -e https://s3-us-west-2.amazonaws.com/us-west-2-aws-dl-cfn/mxnet_cu92mkl-1.3.1-py2.py3-none-manylinux1_x86_64.whl
+pip install -e https://s3.amazonaws.com/us-east-1-aws-dl-cfn/mxnet_cu92mkl-1.3.1-py2.py3-none-manylinux1_x86_64.whl
 ```
 
 To build from source:
