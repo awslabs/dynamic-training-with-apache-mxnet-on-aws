@@ -2,16 +2,16 @@
 
 Dynamic Training (DT) is an experimental fork of MXNet that you can use for dynamically scaling your training jobs.
 
-To use the dynamic training feature you need an instance to serve as your master.
+To use the dynamic training feature you start with one or more instances to train a model.
 You can then add or remove workers at any time to increase your cluster size, even while training.
 
-You can setup Dynamic Training with a Cloud Formation Template (CFT) or with the AWS CLI tool.
-Tutorials for each route are provided.
+You can setup Dynamic Training with a Cloud Formation Template (CFT), manually through the EC2 console, or with the AWS CLI tool.
+Tutorials for CFT and the EC2 console are provided.
 
 * In the [CFT tutorial](#How-to-Setup-Dynamic-Training-with-a-Cloud-Formation-Template), you launch an initial cluster of two instances - a master and a worker.
-Then you add new workers through the EC2 console by using the Launch from Template option.
+Then you add or remove workers through the EC2 console.
 
-* In the [Manual setup tutorial](#How-to-Setup-Dynamic-Training-Manually), you launch a master, configure it, and then add workers.
+* In the [Manual setup tutorial](#How-to-Setup-Dynamic-Training-Manually), you launch one or more nodes, configure them, and then add or remove additional workers.
 
 
 ## Contents of this Guide
@@ -27,19 +27,36 @@ Then you add new workers through the EC2 console by using the Launch from Templa
 ## Plan Your Cluster
 
 So you want use Dynamic Training, but you need a plan!
-There are four areas to plan regardless if you use CFT or the AWS CLI: accessing the nodes, sharing training data or setting up a shared file system, getting the DT package, and what data prep script and training scripts to use.
+There are five areas to plan:
+1) Accessing the nodes.
+2) Sharing training data or setting up a shared file system.
+3) Getting the DT package.
+4) What data prep script and training scripts to use.
+5) Then after your cluster is launched you have slightly different rules for CFT for the nodes in your cluster.
 
-For example, if you have two nodes - master & worker:
-1) You can ssh into the master node, then from master, you can ssh into the worker.
-2) Training data available to each node, either locally or through a shared file system, which master & worker can access.
-3) You have installed MXNet Dynamic Training pip package OR built it from source on the master node.
-4) You have a data preparation script that new workers will use to get ahold of training data, plus the training script that will be used by all members of the cluster.
+For example when configuring your cluster with CFT, you have two nodes - master & worker:
+1) Access: You can ssh into the master node, then from master, you can ssh into the worker. See [CFT Access](#cft-access).
+2) Sharing: Training data available to each node, either locally or through a shared file system, which master & worker can access.
+3) Package: You have installed MXNet Dynamic Training pip package OR built it from source on the master node.
+4) Data prep: You have a data preparation script that new workers will use to get ahold of training data, plus the training script that will be used by all members of the cluster.
+5) Rules: you can never delete the master, and you cannot remove the workers that launched along with the master. You can remove any node that was added after initialization.
 
-### Access
+When configuring your cluster manually, you start with one or more nodes:
+1) Access: You can ssh into any of the nodes.
+2) Sharing: Same as CFT.
+3) Package: Same as CFT.
+4) Data prep: Same as CFT.
+5) Rules: There is no concept of master. Each initial node has both at least one server and worker process running. Like CTF you cannot remove the workers that were launched when the cluster was initialized. And like CFT, you can remove any node that was added after initialization.
+
+
+### CFT Access
 Dynamic Training's cluster setup assumes you have your master and any number of worker nodes.
-The most basic setup is one master and one worker, making a two node cluster.
+The most basic CFT setup is one master and one worker, making a two node cluster.
 You administer everything from the master by SSH.
 The workers don't have public IPs, so if you need to access a worker, you do this from the master.
+
+### Manual Setup Access
+There are no special constraints with accessing your nodes that were manually setup according to the [Setup DT manually tutorial](#How-to-Setup-Dynamic-Training-Manually).
 
 ### Shared File System
 Training cluster nodes access the training dataset using a shared file system.
@@ -74,6 +91,10 @@ The worker will be added to the cluster only if this script is successfully exec
 
 * [Example data preparation script](prepare-data.py) - this script downloads the CIFAR10 dataset.
 
+### Rules for Managing Nodes
+
+Differences between the two setups are covered in detail in each tutorial.
+
 
 ## How to Setup Dynamic Training with a Cloud Formation Template
 
@@ -102,7 +123,7 @@ Click *Add Rule*.
 Select *My IP* in Source tab. Copy that IP, with 24 bit mask.
 For example, if your IP is 192.168.1.200, use 192.168.1.0/24 to allow anyone within that range access the master.
 
-Creation my take five minutes or more.
+Creation may take five minutes or more.
 
 **Step 6:** After the creation of the cluster is finished,
 you need to find the public IP of the master node.
@@ -196,6 +217,9 @@ In the workers' host log file there will be entries like:
 0 ADDED 172.31.65.62 1542536656974259605
 ```
 
+After adding new worker, it is recommended you update the name or keep track of the IP,
+so you know which workers you can safely remove while training is still running.
+
 ### Part 3: Removing Workers from a Training Cluster
 
 To find all the instances in the cluster that can be removed,
@@ -205,6 +229,10 @@ Search for instances with tag key. Replace <STACK-NAME> with your own stack name
 ```bash
 tag:<STACK-NAME>-aws-dl-cfn-elastic-worker : All values
 ```
+
+**Important**:
+* Do not remove the master.
+* Do not remove a worker that was created when you initialized the cluster.
 
 To remove any instance, select that instance from this view and go to the *Tags* tab.
 Click *Add/Edit* tags, then remove the tag `<STACK-NAME>-aws-dl-cfn-elastic-worker`.
@@ -217,7 +245,11 @@ The instance will be terminated automatically after getting removed.
 ## How to Setup Dynamic Training Manually
 
 When you start this process, you launch a single instance.
-This will be your master node.
+This will be your "master" node.
+It is possible to launch a larger fleet from the outset,
+as long as you keep track of the IPs of this initial base of nodes.
+Either way, having a "master" will help you administer other nodes, as you will see in this tutorial.
+
 Make sure you login into your master node using the `-A` flag.
 
 ```bash
@@ -236,7 +268,8 @@ function runclust(){ while read -u 10 host; do host=${host%% slots*}; ssh -o "St
 **Step 2:** Create a hosts file that has the private IPs of every node in the cluster.
 Place the private IP of the master node last in the list.
 That way you can keep track of it. When removing nodes, you never want to remove the master accidentally.
-Also, note that you should not remove these hosts, as these are base hosts required for running training.
+Also, note that you should initialize the cluster with several nodes, you cannot remove these hosts,
+as these are base hosts required for running training.
 You can only remove nodes which were added after training started.
 
 Save it in your master node's home directory.
@@ -319,6 +352,7 @@ You may need these later for administering or troubleshooting your cluster.
 
 **Step 1:** Launch a new instance from the EC2 console.
 **Step 2:** Add the new instance's private IP address to the hosts file.
+Keep track of you new workers as these are the only ones you can remove during training.
 **Step 3:** Prepare data on new instance.
 From the master node, ssh into the new instance and run the data prep script.
 
@@ -352,8 +386,9 @@ The entry in `host_worker_log` will look like:
 ### Remove a Worker from the Cluster
 
 Find the worker that needs to be removed in the `/myEFSvolume/host_worker` file and delete it.
-Be careful about what you are removing and make sure that you don't remove the master node's IP.
-Training will halt if you remove the master node.
+Be careful about what you are removing and make sure that you don't remove the master node's IP,
+or any base node that you initialized the cluster with.
+Training will halt if you remove the master node or one of these base nodes.
 
 In next epoch, worker will be removed and a log line entry will be added to `/myEFSvolume/host_worker_log` file
 The log entry will have entry like this:
