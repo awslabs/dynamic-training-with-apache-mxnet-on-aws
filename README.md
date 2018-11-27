@@ -27,7 +27,7 @@ Then you add or remove workers through the EC2 console.
 ## Plan Your Cluster
 
 So you want use Dynamic Training, but you need a plan!
-There are four areas to plan:
+There are five areas to plan:
 1) Accessing the nodes.
 2) Sharing training data or setting up a shared file system.
 3) Getting the DT package.
