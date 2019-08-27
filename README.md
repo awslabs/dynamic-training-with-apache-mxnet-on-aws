@@ -13,6 +13,18 @@ Then you add or remove workers through the EC2 console.
 
 * In the [Manual setup tutorial](#How-to-Setup-Dynamic-Training-Manually), you launch one or more nodes, configure them, and then add or remove additional workers.
 
+## Reference Paper
+
+The bibtex entry for the [reference paper](https://arxiv.org/pdf/1904.12043.pdf) of dynamic training is:
+
+```
+  @article{lin2019dynamic,
+    title={Dynamic Mini-batch SGD for Elastic Distributed Training: Learning in the Limbo of Resources},
+    author={Lin, Haibin and Zhang, Hang and Ma, Yifei and He, Tong and Zhang, Zhi and Zha, Sheng and Li, Mu},
+    journal={arXiv preprint arXiv:1904.12043},
+    year={2019}
+  }
+```
 
 ## Contents of this Guide
 
