@@ -46,10 +46,7 @@ For instructions on using these models, see [the python tutorial on using pre-tr
 | [ResNext101-64x4d](http://data.dmlc.ml/models/imagenet/resnext/101-layers/resnext-101-64x4d-symbol.json) | ImageNet | [Param File](http://data.dmlc.ml/models/imagenet/resnext/101-layers/resnext-101-64x4d-0000.params) | [Xie et al.., 2016](https://arxiv.org/pdf/1611.05431.pdf) | @Jerryzcn |
 | Fast-RCNN | PASCAL VOC | [Param File] | [Girshick, 2015](https://arxiv.org/pdf/1504.08083v2.pdf) | |
 | Faster-RCNN | PASCAL VOC | [Param File] | [Ren et al..,2016](https://arxiv.org/pdf/1506.01497v3.pdf) | |
-| Single Shot Detection (SSD) | PASCAL VOC | [Param File] | [Liu et al.., 2016](https://arxiv.org/pdf/1512.02325v4.pdf) | |
-| [LocationNet](https://s3.amazonaws.com/mmcommons-tutorial/models/RN101-5k500-symbol.json) | [MultimediaCommons](https://aws.amazon.com/public-datasets/multimedia-commons/) | [Param File](https://s3.amazonaws.com/mmcommons-tutorial/models/RN101-5k500-0012.params) | [Weyand et al.., 2016](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/45488.pdf) | @jychoi84 @kevinli7 |
-
-
+| Single Shot Detection (SSD) | PASCAL VOC | [Param File] | [Liu et al.., 2016](https://arxiv.org/pdf/1512.02325v4.pdf) | 
 
 ## Recurrent Neural Networks (RNNs) including LSTMs
 
