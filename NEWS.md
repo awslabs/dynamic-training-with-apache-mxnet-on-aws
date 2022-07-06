@@ -391,7 +391,7 @@ For more information and examples, see [full release notes](https://cwiki.apache
   - MXNet now compiles and runs on ARMv6, ARMv7, ARMv64 including Raspberry Pi devices. See https://github.com/apache/incubator-mxnet/tree/master/docker_multiarch for more information.
 ### New Features - NVIDIA Jetson support [Experimental]
   - MXNet now compiles and runs on NVIDIA Jetson TX2 boards with GPU acceleration.
-  - You can install the python MXNet package on a Jetson board by running - `$ pip install mxnet-jetson-tx2`.
+  - You can install the python MXNet package on a Jetson board. See https://mxnet.apache.org/versions/1.9.1/get_started/jetson_setup for more information.
 ### New Features - Sparse Tensor Support [General Availability]
   - Added more sparse operators: `contrib.SparseEmbedding`, `sparse.sum` and `sparse.mean`. 
   - Added `asscipy()` for easier conversion to scipy.
